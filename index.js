@@ -25,7 +25,7 @@ async function run() {
     try {
         const serviceCollection = client.db('edenEnclave').collection('services');
 
-        app.get('/coreServices', async (req, res) => {
+        app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find();
             const result = await cursor.toArray();
             res.send(result);
