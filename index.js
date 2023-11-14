@@ -24,6 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const serviceCollection = client.db('edenEnclave').collection('services');
+        const bookingCollection = client.db('edenEnclave').collection('bookings');
 
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find();
@@ -41,7 +42,11 @@ async function run() {
 
 
 
-
+        app.post('/bookings', async (req, res) => {
+            const cart = req.body;
+            const result = await bookingCollection.insertOne(cart);
+            res.send(result);
+        }) 
 
 
 
