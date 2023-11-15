@@ -39,6 +39,12 @@ async function run() {
             res.send(result);
         })
 
+        app.post('/service', async (req, res) => {
+            const newService = req.body;
+            const result = await serviceCollection.insertOne(newService);
+            res.send(result);
+        })
+
 
 
 
@@ -47,6 +53,8 @@ async function run() {
             const result = await bookingCollection.insertOne(cart);
             res.send(result);
         }) 
+
+        
 
 
 
