@@ -32,17 +32,25 @@ async function run() {
             res.send(result);
         })
 
+        
+        app.get('/myServices', async (req, res) => {
+            const email = req.query.email; 
+            const query = { email: email };
+        
+            const cursor = serviceCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+        
+        
+        
+
+
+
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id || '';
             const query = {_id: new ObjectId(id)};
             const result = await serviceCollection.findOne(query);
-            res.send(result);
-        })
-
-        app.get('/myServices/:email', async (req, res) => {
-            const email = req.params.email || '';
-            const query = {email: email};
-            const result = await serviceCollection.find(query).toArray();
             res.send(result);
         })
 
