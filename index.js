@@ -92,13 +92,26 @@ async function run() {
         });
 
 
-
+        app.get('/myBookings', async (req, res) => {
+            const email = req.query.email; 
+            const query = { email: email };      
+            const cursor = bookingCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
         app.post('/bookings', async (req, res) => {
             const cart = req.body;
             const result = await bookingCollection.insertOne(cart);
             res.send(result);
         }) 
+
+        app.delete('/myBookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bookingCollection.deleteOne(query);
+            res.send(result);
+        });
 
         
 
