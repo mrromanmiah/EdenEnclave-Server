@@ -91,7 +91,6 @@ async function run() {
             res.send(result);
         });
 
-
         app.get('/myBookings', async (req, res) => {
             const email = req.query.email; 
             const query = { email: email };      
@@ -100,11 +99,19 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/bookings', async (req, res) => {
+            const cursor = bookingCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         app.post('/bookings', async (req, res) => {
-            const cart = req.body;
-            const result = await bookingCollection.insertOne(cart);
+            const bookService = req.body;
+            const result = await bookingCollection.insertOne(bookService);
             res.send(result);
         }) 
+
+        
 
         app.delete('/myBookings/:id', async (req, res) => {
             const id = req.params.id;
