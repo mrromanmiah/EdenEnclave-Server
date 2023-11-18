@@ -31,10 +31,10 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
-        
+
         app.get('/myServices', async (req, res) => {
-            const email = req.query.email; 
-            const query = { email: email };      
+            const email = req.query.email;
+            const query = { email: email };
             const cursor = serviceCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
@@ -42,19 +42,19 @@ async function run() {
 
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id || '';
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await serviceCollection.findOne(query);
             res.send(result);
         })
-        
-        app.get('/services/:ServiceProviderEmail', async (req, res) => {
-            const ServiceProviderEmail = req.params.ServiceProviderEmail || '';
-            const query = { ServiceProviderEmail: ServiceProviderEmail };
+
+        app.get('/otherServices', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
             const cursor = serviceCollection.find(query);
             const result = await cursor.toArray();
-            res.json(result);
+            res.send(result);
         });
-
+        
         app.post('/services', async (req, res) => {
             const newService = req.body;
             const result = await serviceCollection.insertOne(newService);
@@ -63,29 +63,29 @@ async function run() {
 
         app.get('/updateService/:id', async (req, res) => {
             const id = req.params.id || '';
-            const query = {_id: new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await serviceCollection.findOne(query);
             res.send(result);
         })
 
         app.put('/updateService/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id: new ObjectId(id)};
-            const options = {upsert: true};
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
             const updatedService = req.body;
             const updateService = {
                 $set: {
-                    ServiceName: updatedService.ServiceName, 
-                    ServiceImage : updatedService.ServiceImage, 
-                    ServicePrice : updatedService.ServicePrice, 
-                    ServiceDescription : updatedService.ServiceDescription, 
-                    ServiceProviderImage : updatedService.ServiceProviderImage, 
-                    ServiceProviderName : updatedService.ServiceProviderName, 
-                    ServiceProviderLocation : updatedService.ServiceProviderLocation,
-                    ServiceProviderEmail : updatedService.ServiceProviderEmail,
-                    ShortDescription : updatedService.ShortDescription,                   
-                    email : updatedService.email,                   
-                    displayName : updatedService.displayName                   
+                    ServiceName: updatedService.ServiceName,
+                    ServiceImage: updatedService.ServiceImage,
+                    ServicePrice: updatedService.ServicePrice,
+                    ServiceDescription: updatedService.ServiceDescription,
+                    ServiceProviderImage: updatedService.ServiceProviderImage,
+                    ServiceProviderName: updatedService.ServiceProviderName,
+                    ServiceProviderLocation: updatedService.ServiceProviderLocation,
+                    ServiceProviderEmail: updatedService.ServiceProviderEmail,
+                    ShortDescription: updatedService.ShortDescription,
+                    email: updatedService.email,
+                    displayName: updatedService.displayName
                 }
             }
             const result = await serviceCollection.updateOne(filter, updateService, options);
@@ -100,8 +100,8 @@ async function run() {
         });
 
         app.get('/myBookings', async (req, res) => {
-            const email = req.query.email; 
-            const query = { email: email };      
+            const email = req.query.email;
+            const query = { email: email };
             const cursor = bookingCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
@@ -117,23 +117,23 @@ async function run() {
             const bookService = req.body;
             const result = await bookingCollection.insertOne(bookService);
             res.send(result);
-        }) 
+        })
 
         app.patch('/bookings/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id: new ObjectId(id)};
+            const filter = { _id: new ObjectId(id) };
             const updatedBooking = req.body;
             const updateDoc = {
                 $set: {
-                  status: updatedBooking.status
+                    status: updatedBooking.status
                 },
-              };
-              const result = await bookingCollection.updateOne(filter, updateDoc);
-              res.send(result);
+            };
+            const result = await bookingCollection.updateOne(filter, updateDoc);
+            res.send(result);
 
         })
 
-        
+
 
         app.delete('/myBookings/:id', async (req, res) => {
             const id = req.params.id;
@@ -142,7 +142,7 @@ async function run() {
             res.send(result);
         });
 
-        
+
 
 
 
