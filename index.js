@@ -46,6 +46,14 @@ async function run() {
             const result = await serviceCollection.findOne(query);
             res.send(result);
         })
+        
+        app.get('/services/:ServiceProviderEmail', async (req, res) => {
+            const ServiceProviderEmail = req.params.ServiceProviderEmail || '';
+            const query = { ServiceProviderEmail: ServiceProviderEmail };
+            const cursor = serviceCollection.find(query);
+            const result = await cursor.toArray();
+            res.json(result);
+        });
 
         app.post('/services', async (req, res) => {
             const newService = req.body;
@@ -122,6 +130,7 @@ async function run() {
               };
               const result = await bookingCollection.updateOne(filter, updateDoc);
               res.send(result);
+
         })
 
         
