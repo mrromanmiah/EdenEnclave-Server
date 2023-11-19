@@ -1,12 +1,20 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:5173'
+    ],
+    credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 
 
@@ -21,10 +29,54 @@ const client = new MongoClient(uri, {
     }
 });
 
+const logger = (req, res, next) => {
+    console.log('log: info', req.method, req.url);
+    next();
+}
+const verifyToken = (req, res, next) => {
+    const token = req?.cookies?.token;
+    // console.log('middleware token', token);
+    if (!token) {
+        return res.status(401).send({message: 'unauthorized access'});
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({message: 'unauthorized access'});
+        }
+        req.user = decoded;
+        next();
+    });
+    // next();
+}
+
+
+
 async function run() {
     try {
         const serviceCollection = client.db('edenEnclave').collection('services');
         const bookingCollection = client.db('edenEnclave').collection('bookings');
+
+        app.post('/jwt', logger, async(req, res) => {
+            const user = req.body;
+            console.log('user for token', user);
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '3h'})
+
+            res.cookie('token', token, {
+                httpOnly: true, 
+                secure: true, 
+                sameSite: 'none'
+            })
+            .send({success: true});
+        })
+
+        app.post('/logout', async(req, res) => {
+            const user = req.body;
+            console.log('logging out', user);
+            res.clearCookie('token', {maxAge: 0}).send({success: true});
+        });
+
+
+
 
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find();
@@ -32,7 +84,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/myServices', async (req, res) => {
+        app.get('/myServices',logger, async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
             const cursor = serviceCollection.find(query);
@@ -53,7 +105,7 @@ async function run() {
             const cursor = serviceCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
-        });
+        }); 
         
         app.post('/services', async (req, res) => {
             const newService = req.body;
@@ -99,7 +151,9 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/myBookings', async (req, res) => {
+        app.get('/myBookings', logger, verifyToken, async (req, res) => {
+            console.log(req.query.email);
+            // console.log('cookies', req.cookies);
             const email = req.query.email;
             const query = { email: email };
             const cursor = bookingCollection.find(query);
