@@ -9,7 +9,9 @@ const port = process.env.PORT || 5000;
 
 app.use(cors({
     origin: [
-        'http://localhost:5173'
+        'https://edenenclave-8ff8d.web.app',
+        'https://edenenclave-8ff8d.firebaseapp.com'
+
     ],
     credentials: true
 }));
